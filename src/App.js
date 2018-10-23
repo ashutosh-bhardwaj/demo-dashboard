@@ -3,13 +3,13 @@ import { Switch, Route } from 'react-router-dom';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import SignIn from './components/SignIn';
-import SimpleTable from './components/SimpleTable';
+import FormikExample from './components/FormikExample';
 class App extends Component {
   render() {
     return (
       <React.Fragment>
         <Switch>
-          <Route exact path="/" component={SimpleTable} />
+          <Route exact path="/" component={FormikExample} />
           <Route path="/login" component={SignIn} />
           <Route path="/dashboard" component={Dashboard} />
         </Switch>

@@ -12,6 +12,7 @@ import LockIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
+import { Formik, Form, Field } from 'formik';
 
 const styles = theme => ({
 	layout: {
@@ -47,27 +48,9 @@ const styles = theme => ({
 });
 
 class SignIn extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			email: '',
-			password: ''
-		};
-	}
-
-	handleOnChange = (event, name) => {
-		this.setState({ [name]: event.target.value });
-  };
-  
-  handleOnSubmit = (event) => {
-    event.preventDefault();
-    // Send back to server
-    alert(JSON.stringify(this.state));
-  }
 
 	render() {
 		const { classes } = this.props;
-		const { email, password } = this.state;
 
 		return (
 			<React.Fragment>
@@ -80,44 +63,94 @@ class SignIn extends React.Component {
 						<Typography component="h1" variant="h5">
 							Sign in
 						</Typography>
-						<form className={classes.form}>
-							<FormControl margin="normal" required fullWidth>
-								<InputLabel htmlFor="email">Email Address</InputLabel>
-								<Input
-									id="email"
+						<Formik
+							initialValues={{ email: '', password: '' }}
+							validate={values => {
+								let errors = {};
+								if (!values.email) {
+									errors.email = 'Required';
+								} else if (
+									!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+								) {
+									errors.email = 'Invalid email address';
+								}
+								if (!values.password) {
+									errors.password = 'Required';
+								} else if (values.password.length < 6) {
+									errors.password = 'Password Must be 6 characters long';
+								}
+								return errors;
+							}}
+							onSubmit={(values, { setSubmitting }) => {
+								setTimeout(() => {
+									alert(JSON.stringify(values, null, 2));
+									setSubmitting(false);
+								}, 400);
+							}}
+						>
+							<Form className={classes.form}>
+								<Field
+									type="email"
 									name="email"
-									autoComplete="email"
-									autoFocus
-                  value={email}
-                  onChange={(e) => this.handleOnChange(e, 'email')}
+									render={({ form, field }) => (
+										<FormControl margin="normal" required fullWidth>
+											<InputLabel
+												error={
+													Boolean(form.touched[field.name] && form.errors[field.name])
+												}
+												htmlFor="email"
+											>
+												Email Address
+											</InputLabel>
+											<Input
+												id="email"
+												name="email"
+												autoComplete="email"
+												autoFocus
+												{...field}
+											/>
+										</FormControl>
+									)}
 								/>
-							</FormControl>
-							<FormControl margin="normal" required fullWidth>
-								<InputLabel htmlFor="password">Password</InputLabel>
-								<Input
-									name="password"
+
+								<Field
 									type="password"
-									id="password"
-									autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => this.handleOnChange(e, 'password')}                  
+									name="password"
+									render={({ field, form }) => (
+										<FormControl margin="normal" required fullWidth>
+											<InputLabel
+												error={
+													Boolean(form.touched[field.name] && form.errors[field.name])
+												}
+												htmlFor="password"
+											>
+												Password
+											</InputLabel>
+											<Input
+												name="password"
+												type="password"
+												id="password"
+												autoComplete="current-password"
+												{...field}
+											/>
+										</FormControl>
+									)}
 								/>
-							</FormControl>
-							<FormControlLabel
-								control={<Checkbox value="remember" color="primary" />}
-								label="Remember me"
-							/>
-							<Button
-								type="submit"
-								fullWidth
-								variant="contained"
-								color="primary"
-                className={classes.submit}
-                onClick={this.handleOnSubmit}
-							>
-								Sign in
-							</Button>
-						</form>
+								<FormControlLabel
+									control={<Checkbox value="remember" color="primary" />}
+									label="Remember me"
+								/>
+								<Button
+									type="submit"
+									fullWidth
+									variant="contained"
+									color="primary"
+									className={classes.submit}
+								>
+									Sign in
+								</Button>
+							</Form>
+						</Formik>
 					</Paper>
 				</main>
 			</React.Fragment>
